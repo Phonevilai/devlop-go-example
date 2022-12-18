@@ -13,7 +13,7 @@ jobs:
     name: Quality Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - uses: sonarsource/sonarqube-scan-action@master
@@ -56,7 +56,7 @@ jobs:
           logout: true
 
       - name: Push to GitHub Container Registry
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v2
         with:
           context: .
           tags: |
@@ -74,7 +74,7 @@ jobs:
   #   needs: build-and-push-docker-image
   #   steps:
   #     - name: checkout
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v2
   #       with:
   #         repository: aorjoa-training/devops-argocd
   #         persist-credentials: false
