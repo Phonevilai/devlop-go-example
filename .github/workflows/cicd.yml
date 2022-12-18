@@ -34,16 +34,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Setup SHA
         run: echo "GITHUB_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
-
+      
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ghcr.io/Phonevilai/devlop-go-example:${{ env.GITHUB_SHA }}
-
+        run: docker build . --file Dockerfile --tag ghcr.io/aorjoa-training/devops-go-example:${{ env.GITHUB_SHA }}
+        
       - name: Integration test inside Docker-compose cleanup
         run: docker-compose -f docker-compose.test.yml down
-
+    
       - name: Integration test inside Docker-compose
         run: docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from it_tests
 
@@ -54,13 +54,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           logout: true
-
+      
       - name: Push to GitHub Container Registry
         uses: docker/build-push-action@v2
         with:
           context: .
           tags: |
-            ghcr.io/Phonevilai/devlop-go-example:${{ env.GITHUB_SHA }}
+            ghcr.io/aorjoa-training/devops-go-example:${{ env.GITHUB_SHA }}
           # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/main' }}
 
@@ -76,20 +76,20 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
         with:
-          repository: Phonevilai/devops-argocd
+          repository: aorjoa-training/devops-argocd
           persist-credentials: false
           fetch-depth: 0
       - name: change image tag
         run: |
           git --version
-          git config user.name "Phonevilai"
-          git config user.email "root@Phonevilai.link"
-          sed -i -E "s/ghcr.io\/Phonevilai\/devops-go-example.*$/ghcr.io\/Phonevilai\/devops-go-example:${GITHUB_SHA}/" kube-gitops/deployment.yml
+          git config user.name "aorjoa"
+          git config user.email "root@aorjoa.link"
+          sed -i -E "s/ghcr.io\/aorjoa-training\/devops-go-example.*$/ghcr.io\/aorjoa-training\/devops-go-example:${GITHUB_SHA}/" kube-gitops/deployment.yml
           git add kube-gitops/deployment.yml
           git commit -m "🤖 change docker image version to ${GITHUB_SHA}"
       - name: push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.PAT }}
-          repository: Phonevilai/devops-argocd
+          repository: aorjoa-training/devops-argocd
           branch: main
